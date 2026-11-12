@@ -1,0 +1,13 @@
+// Used only if this repo is imported into Cloudflare as a Worker (Workers Builds
+// or `npx wrangler deploy`). A Cloudflare Pages project ignores this file and uses
+// build command `node cloudflare/build.js` with output directory `cloudflare/dist`.
+{
+  "name": "hareram-ai-assistant",
+  "main": "cloudflare/dist/worker.mjs",
+  "compatibility_date": "2026-01-01",
+  "build": { "command": "node cloudflare/build.js" },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://hareram.website,https://www.hareram.website"
+  }
+  // OPENAI_API_KEY is a secret: add it in the Cloudflare dashboard, never here.
+}
