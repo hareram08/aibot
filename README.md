@@ -1,7 +1,8 @@
 # Hare Ram's AI Assistant — setup and maintenance
 
 A chat widget for hareram.website that answers questions about Hare Ram from a
-verified knowledge base, using the OpenAI API through a serverless function.
+verified knowledge base, through a serverless function. The backend calls
+Gemini or OpenAI — whichever API key is set (Gemini is used if both are set).
 
 ## What the inspection of the live site found
 
@@ -22,19 +23,21 @@ function (`api/chat.js`). No separate server, no framework, no npm packages.
 ## Files
 
 ```
-api/chat.js               Serverless function: validation, rate limit, OpenAI call
+api/chat.js               Serverless function: validation, rate limit, calls the LLM
 api/_lib/knowledge.json   Everything the assistant knows (edit this to update it)
 api/_lib/prompt.js        The assistant's rules (system prompt)
 api/_lib/rate-limit.js    Per-visitor rate limiter
 api/_lib/validate.js      Request validation (shared with the Cloudflare Worker)
+api/_lib/llm.js           Calls Gemini or OpenAI, whichever key is set (shared with the Worker)
 cloudflare/build.js       Builds the single-file Cloudflare Worker
-cloudflare/worker.template.js   Worker source (routes, CORS, OpenAI call)
+cloudflare/worker.template.js   Worker source (routes, CORS, calls the LLM)
 css/chatbot.css           Widget styles (uses the site's own CSS variables)
 js/chatbot.js             Widget behaviour (no dependencies)
 .env.example              Environment variable template
 scripts/dev-server.js     Local server for testing (not used in production)
-tests/api.test.js         Vercel function tests (no API key or internet needed)
-tests/worker.test.js      Cloudflare Worker tests
+tests/api.test.js         Vercel function tests, OpenAI path (no API key or internet needed)
+tests/gemini.test.js      Vercel function tests, Gemini path
+tests/worker.test.js      Cloudflare Worker tests (both providers)
 ```
 
 Folders starting with `_` inside `api/` are not turned into endpoints by Vercel.
@@ -48,7 +51,7 @@ backend:
 |---|---|---|
 | Where it runs | Cloudflare Worker `hareram-ai-assistant` | `api/chat.js` inside the website's own Vercel project |
 | Website change | Two lines in `index.html` pointing at Cloudflare | Copy files into the site + two lines |
-| Key lives in | Cloudflare secret `OPENAI_API_KEY` | Vercel environment variable `OPENAI_API_KEY` |
+| Key lives in | Cloudflare secret `GEMINI_API_KEY` (or `OPENAI_API_KEY`) | Vercel environment variable `GEMINI_API_KEY` (or `OPENAI_API_KEY`) |
 
 ## Cloudflare deployment
 
@@ -71,8 +74,10 @@ Variables (Workers & Pages > hareram-ai-assistant > Settings > Variables and Sec
 
 | Name | Type | Value |
 |---|---|---|
-| `OPENAI_API_KEY` | Secret | your OpenAI key (never commit it) |
+| `GEMINI_API_KEY` | Secret | your Gemini key (never commit it) — used if set, even if `OPENAI_API_KEY` is also set |
 | `ALLOWED_ORIGINS` | Text | `https://hareram.website,https://www.hareram.website` |
+| `GEMINI_MODEL` | Text, optional | default `gemini-2.5-flash` |
+| `OPENAI_API_KEY` | Secret, alternative provider | your OpenAI key (only used if `GEMINI_API_KEY` is not set) |
 | `OPENAI_MODEL` | Text, optional | default `gpt-4.1-mini` |
 
 Saving a variable or secret in the dashboard deploys it immediately.
@@ -128,12 +133,14 @@ narrower than 1280px, so the chat button never sits on top of the footer links.
 
 ### Deploy on Vercel
 
-1. Create an API key at https://platform.openai.com/api-keys.
-2. **Set a monthly spend limit** on the OpenAI account (Billing > Limits). This
-   is the hard ceiling on cost; see "Rate limiting" below for why it matters.
+1. Create a free API key at https://aistudio.google.com/apikey (or an OpenAI
+   key at https://platform.openai.com/api-keys if you'd rather use that).
+2. **Set a spend/usage limit** where the key was issued (Google AI Studio's
+   usage page, or OpenAI's Billing > Limits). This is the hard ceiling on
+   cost; see "Rate limiting" below for why it matters.
 3. Vercel dashboard > your project > Settings > Environment Variables. Add
-   `OPENAI_API_KEY` for Production (and Preview if you want it on previews).
-   Optional variables are listed in `.env.example`.
+   `GEMINI_API_KEY` (or `OPENAI_API_KEY`) for Production (and Preview if you
+   want it on previews). Optional variables are listed in `.env.example`.
 4. Commit and push (or run `vercel --prod`). Environment variables only apply
    to deployments made after they were added, so redeploy if you add the key
    afterwards.
@@ -152,14 +159,17 @@ Needs Node.js 18 or newer. `vercel dev` also works if you use the Vercel CLI.
 
 ```bash
 node cloudflare/build.js
-node --test tests/api.test.js tests/worker.test.js
+node --test tests/api.test.js tests/gemini.test.js tests/worker.test.js
 ```
 
-Thirteen backend tests run against a fake OpenAI server: valid answers, system
-prompt and knowledge base are sent, follow-up context, role injection blocked,
-empty/malformed input, 500-character limit, history trimming, oversized
-bodies, wrong method/content type, cross-site blocking, upstream errors hidden
-from visitors, missing key, rate limiter, and knowledge-base integrity.
+Backend tests run against fake Gemini and OpenAI servers (no real key or
+internet needed, nothing billed): valid answers, system prompt and knowledge
+base are sent, follow-up context mapped to each provider's message format,
+role injection blocked, empty/malformed input, 500-character limit, history
+trimming, oversized bodies, wrong method/content type, cross-site blocking,
+upstream errors hidden from visitors, missing key, provider priority
+(Gemini over OpenAI when both keys are set), rate limiter, and knowledge-base
+integrity.
 
 ## Updating what the assistant knows
 
@@ -192,7 +202,8 @@ message or suggested questions, edit `CONFIG` at the top of `js/chatbot.js`.
   most 40 messages per request, last 12 sent to the model, control characters
   stripped.
 - Requests from other websites are refused (the `Origin` must match the site).
-- OpenAI error details are logged on the server and never shown to visitors.
+- Provider (Gemini/OpenAI) error details are logged on the server and never
+  shown to visitors.
 - Assistant replies are HTML-escaped before display; only bold, lists, code
   and links to `http(s)`, `mailto`, `/` and `#` addresses are rendered.
 
@@ -205,7 +216,7 @@ that memory is separate for each running instance and is wiped on a cold
 start, so the limit is approximate: it stops casual abuse, not a determined
 script. Three things cover the gap:
 
-1. The OpenAI spend limit from the deploy steps (the real ceiling).
+1. The provider spend/usage limit from the deploy steps (the real ceiling).
 2. Replies are capped at 700 tokens and history at 12 messages.
 3. If you ever see abuse, move the counters to a shared store such as Upstash
    Redis; only `api/_lib/rate-limit.js` needs to change.
@@ -218,11 +229,19 @@ script. Three things cover the gap:
 - **Vercel "Root Directory" / "Output Directory" settings**: the `api/` folder
   must be at the project's root directory as Vercel sees it. If the project is
   configured to deploy a subfolder, put `api/` inside that subfolder.
-- **Model retirement**: OpenAI retires models over time. If answers stop and
-  the Vercel function log shows a 404 for the model, set `OPENAI_MODEL` to a
-  current one. Reasoning-style models can spend the 700-token budget thinking
-  and return nothing; prefer a standard chat model, or raise `MAX_REPLY_TOKENS`
-  in `api/chat.js`.
+- **Model retirement**: both Google and OpenAI retire model names over time.
+  If answers stop and the log shows a 404 for the model, set `GEMINI_MODEL`
+  (or `OPENAI_MODEL`) to a current one. Reasoning-style models can spend the
+  700-token budget thinking and return nothing; prefer a standard chat model,
+  or raise `MAX_REPLY_TOKENS` in `api/chat.js`.
+- **Gemini safety filters**: Gemini can return an empty reply with
+  `finishReason: "SAFETY"` for a question it flags, even an innocuous one.
+  This shows up to the visitor as "could not produce an answer"; check the
+  Cloudflare/Vercel logs for the `[chat] Gemini finishReason` line.
+- **Switching providers**: set the other key (`GEMINI_API_KEY` or
+  `OPENAI_API_KEY`) and remove the one you're moving away from — Gemini is
+  always preferred when both are present, so leaving an old key in place
+  silently does nothing once the other is set.
 - **Shared networks**: visitors behind one office or college IP address share
   one rate-limit bucket. Raise `CHAT_RATE_LIMIT_PER_MINUTE` if recruiters at
   the same company get blocked.
@@ -239,8 +258,8 @@ script. Three things cover the gap:
 
 | Symptom | Cause and fix |
 |---|---|
-| "The assistant is not available right now" | `OPENAI_API_KEY` missing, wrong, or out of credit. Check Vercel > Logs for `[chat]` lines |
+| "The assistant is not available right now" | Neither `GEMINI_API_KEY` nor `OPENAI_API_KEY` is set, or the key is wrong/out of credit. Check the logs for `[chat]` lines |
 | "The assistant is not set up on this site yet" | `/api/chat` returned 404: the `api/` folder is not at the deployed root |
-| "The assistant is busy right now" | OpenAI rate limit or outage; also shown when the account has no credit |
+| "The assistant is busy right now" | Provider rate limit or outage; also shown when the account has no quota/credit left |
 | Chat button missing | The two lines in `index.html` were not added, or the file paths differ |
 | Widget looks unstyled | `css/chatbot.css` must load after `css/styles.css` |

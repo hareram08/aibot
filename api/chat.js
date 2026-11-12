@@ -6,14 +6,15 @@
  * Request:  { "messages": [ { "role": "user" | "assistant", "content": "..." }, ... ] }
  * Response: { "reply": "..." }  or  { "error": "...", "code": "..." }
  *
- * The OpenAI key is read from the OPENAI_API_KEY environment variable and
- * never leaves the server.
+ * The provider key (GEMINI_API_KEY or OPENAI_API_KEY) is read from the
+ * server's environment variables and never leaves the server.
  */
 
 const knowledgeBase = require("./_lib/knowledge.json");
 const { buildSystemPrompt } = require("./_lib/prompt");
 const { createLimiter } = require("./_lib/rate-limit");
 const { validateMessages, MAX_MESSAGE_CHARS } = require("./_lib/validate");
+const { askAssistant, pickProvider } = require("./_lib/llm");
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_REPLY_TOKENS = 700;
@@ -101,46 +102,6 @@ function readBody(req) {
   });
 }
 
-async function askOpenAI(messages) {
-  const baseUrl = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
-  try {
-    const response = await fetch(baseUrl + "/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + process.env.OPENAI_API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-        messages: [{ role: "system", content: SYSTEM_PROMPT }].concat(messages),
-        max_completion_tokens: MAX_REPLY_TOKENS,
-      }),
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      let detail = "";
-      try {
-        detail = (await response.text()).slice(0, 300);
-      } catch (error) {
-        /* ignore */
-      }
-      // Logged on the server only; never returned to the browser.
-      console.error("[chat] OpenAI error", response.status, detail);
-      return { upstreamStatus: response.status };
-    }
-
-    const data = await response.json();
-    const choice = data && data.choices && data.choices[0];
-    const reply = choice && choice.message && typeof choice.message.content === "string" ? choice.message.content.trim() : "";
-    return { reply: reply };
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function handler(req, res) {
   if (!originAllowed(req)) return fail(res, 403, "forbidden_origin", "This chat can only be used from the portfolio website.");
 
@@ -191,13 +152,17 @@ async function handler(req, res) {
   const result = validateMessages(body);
   if (result.error) return fail(res, 400, "invalid_request", result.error);
 
-  if (!process.env.OPENAI_API_KEY) {
-    console.error("[chat] OPENAI_API_KEY is not set.");
+  if (!pickProvider(process.env)) {
+    console.error("[chat] No GEMINI_API_KEY or OPENAI_API_KEY is set.");
     return fail(res, 503, "not_configured", "The assistant is not available right now. Please use the contact section to reach Hare Ram.");
   }
 
   try {
-    const answer = await askOpenAI(result.messages);
+    const answer = await askAssistant(result.messages, process.env, {
+      systemPrompt: SYSTEM_PROMPT,
+      maxTokens: MAX_REPLY_TOKENS,
+      timeoutMs: UPSTREAM_TIMEOUT_MS,
+    });
     if (answer.upstreamStatus) {
       const busy = answer.upstreamStatus === 429 || answer.upstreamStatus >= 500;
       return fail(

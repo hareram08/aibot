@@ -11,7 +11,9 @@
  *   GET  /             a small test page for the widget
  *
  * Configuration (Worker > Settings > Variables and Secrets)
- *   OPENAI_API_KEY    secret, required
+ *   GEMINI_API_KEY    secret; set this OR OPENAI_API_KEY (Gemini is tried first)
+ *   GEMINI_MODEL      optional, default gemini-2.5-flash
+ *   OPENAI_API_KEY    secret, alternative provider
  *   OPENAI_MODEL      optional, default gpt-4.1-mini
  *   ALLOWED_ORIGINS   comma-separated sites allowed to embed the widget
  *   CHAT_RATE_LIMIT_PER_MINUTE / CHAT_RATE_LIMIT_PER_DAY   optional
@@ -26,6 +28,9 @@ __VALIDATE_SOURCE__
 
 /* ---- inlined from api/_lib/rate-limit.js ---- */
 __RATE_LIMIT_SOURCE__
+
+/* ---- inlined from api/_lib/llm.js ---- */
+__LLM_SOURCE__
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_REPLY_TOKENS = 700;
@@ -76,40 +81,6 @@ function json(status, payload, extra) {
   });
 }
 
-async function askOpenAI(messages, env) {
-  const baseUrl = (env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
-  try {
-    const response = await fetch(baseUrl + "/chat/completions", {
-      method: "POST",
-      headers: { Authorization: "Bearer " + env.OPENAI_API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: env.OPENAI_MODEL || "gpt-4.1-mini",
-        messages: [{ role: "system", content: SYSTEM_PROMPT }].concat(messages),
-        max_completion_tokens: MAX_REPLY_TOKENS,
-      }),
-      signal: controller.signal,
-    });
-    if (!response.ok) {
-      let detail = "";
-      try {
-        detail = (await response.text()).slice(0, 300);
-      } catch (error) {
-        /* ignore */
-      }
-      console.error("[chat] OpenAI error", response.status, detail); // server log only
-      return { upstreamStatus: response.status };
-    }
-    const data = await response.json();
-    const choice = data && data.choices && data.choices[0];
-    const reply = choice && choice.message && typeof choice.message.content === "string" ? choice.message.content.trim() : "";
-    return { reply: reply };
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function handleChat(request, env, url) {
   const access = allowedOrigin(request, env, url);
   if (!access.ok) {
@@ -156,13 +127,17 @@ async function handleChat(request, env, url) {
   const result = validateMessages(body);
   if (result.error) return fail(400, "invalid_request", result.error);
 
-  if (!env.OPENAI_API_KEY) {
-    console.error("[chat] OPENAI_API_KEY is not set.");
+  if (!pickProvider(env)) {
+    console.error("[chat] No GEMINI_API_KEY or OPENAI_API_KEY is set.");
     return fail(503, "not_configured", "The assistant is not available right now. Please use the contact section to reach Hare Ram.");
   }
 
   try {
-    const answer = await askOpenAI(result.messages, env);
+    const answer = await askAssistant(result.messages, env, {
+      systemPrompt: SYSTEM_PROMPT,
+      maxTokens: MAX_REPLY_TOKENS,
+      timeoutMs: UPSTREAM_TIMEOUT_MS,
+    });
     if (answer.upstreamStatus) {
       const busy = answer.upstreamStatus === 429 || answer.upstreamStatus >= 500;
       return fail(

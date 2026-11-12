@@ -143,3 +143,33 @@ test("serves the widget files and a test page", async () => {
 
   assert.strictEqual((await worker.fetch(new Request(SELF + "/nope"), env)).status, 404);
 });
+
+test("uses Gemini when GEMINI_API_KEY is set (it takes priority over OPENAI_API_KEY)", async () => {
+  const geminiUpstream = http.createServer((req, res) => {
+    let raw = "";
+    req.on("data", (chunk) => (raw += chunk));
+    req.on("end", () => {
+      lastUpstream = { url: req.url, body: JSON.parse(raw || "{}") };
+      res.end(JSON.stringify({ candidates: [{ content: { parts: [{ text: "Gemini answer about Hare Ram." }] }, finishReason: "STOP" }] }));
+    });
+  });
+  await new Promise((resolve) => geminiUpstream.listen(0, "127.0.0.1", resolve));
+  try {
+    const geminiEnv = Object.assign({}, env, {
+      GEMINI_API_KEY: "AIza-test-key-123",
+      GEMINI_BASE_URL: "http://127.0.0.1:" + geminiUpstream.address().port + "/v1beta",
+    });
+    const response = await chat({ messages: [user("Who is Hare Ram?")] }, null, geminiEnv);
+    const text = await response.text();
+    assert.strictEqual(response.status, 200);
+    assert.deepStrictEqual(JSON.parse(text), { reply: "Gemini answer about Hare Ram." });
+    assert.ok(!text.includes("AIza-test-key-123"));
+    assert.match(lastUpstream.url, /\/v1beta\/models\/gemini-2\.5-flash:generateContent\?key=AIza-test-key-123$/);
+    assert.deepStrictEqual(
+      lastUpstream.body.contents.map((c) => c.role),
+      ["user"]
+    );
+  } finally {
+    geminiUpstream.close();
+  }
+});

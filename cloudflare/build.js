@@ -34,6 +34,7 @@ const replacements = {
   __WIDGET_CSS__: JSON.stringify(read("css/chatbot.css")),
   __VALIDATE_SOURCE__: inlineModule("api/_lib/validate.js"),
   __RATE_LIMIT_SOURCE__: inlineModule("api/_lib/rate-limit.js"),
+  __LLM_SOURCE__: inlineModule("api/_lib/llm.js"),
 };
 
 let output = read("cloudflare/worker.template.js");
