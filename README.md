@@ -46,7 +46,7 @@ backend:
 
 | | Cloudflare (this repo's deployment) | Vercel function |
 |---|---|---|
-| Where it runs | Cloudflare Pages project built from this repo | `api/chat.js` inside the website's own Vercel project |
+| Where it runs | Cloudflare Worker `hareram-ai-assistant` | `api/chat.js` inside the website's own Vercel project |
 | Website change | Two lines in `index.html` pointing at Cloudflare | Copy files into the site + two lines |
 | Key lives in | Cloudflare secret `OPENAI_API_KEY` | Vercel environment variable `OPENAI_API_KEY` |
 
@@ -59,11 +59,15 @@ backend:
 - `GET /chatbot.js` and `GET /chatbot.css` — the widget
 - `GET /` — a test page for the widget
 
-Cloudflare Pages settings: build command `node cloudflare/build.js`, output
-directory `cloudflare/dist`, no framework preset. Every push to `main`
-rebuilds and redeploys.
+**Live deployment:** Worker `hareram-ai-assistant` at
+https://hareram-ai-assistant.hareram.workers.dev (test page at `/`). It was
+uploaded through the Cloudflare API, so it does NOT redeploy on push. To get
+automatic deploys, connect this repo in the Cloudflare dashboard (Workers &
+Pages > the Worker > Settings > Build > connect Git repository; the included
+`wrangler.jsonc` supplies the build settings), or run `npx wrangler deploy`
+after each change.
 
-Variables (Pages project > Settings > Variables and Secrets, Production):
+Variables (Workers & Pages > hareram-ai-assistant > Settings > Variables and Secrets):
 
 | Name | Type | Value |
 |---|---|---|
@@ -71,17 +75,17 @@ Variables (Pages project > Settings > Variables and Secrets, Production):
 | `ALLOWED_ORIGINS` | Text | `https://hareram.website,https://www.hareram.website` |
 | `OPENAI_MODEL` | Text, optional | default `gpt-4.1-mini` |
 
-After adding or changing a variable, redeploy (Deployments > Retry deployment).
+Saving a variable or secret in the dashboard deploys it immediately.
 
-Embed on the website (replace `YOUR-PROJECT` with the Pages address):
+Embed on the website:
 
 ```html
 <!-- in <head>, after css/styles.css -->
-<link rel="stylesheet" href="https://YOUR-PROJECT.pages.dev/chatbot.css">
+<link rel="stylesheet" href="https://hareram-ai-assistant.hareram.workers.dev/chatbot.css">
 
 <!-- before </body>, after js/main.js -->
-<script src="https://YOUR-PROJECT.pages.dev/chatbot.js"
-        data-endpoint="https://YOUR-PROJECT.pages.dev/api/chat" defer></script>
+<script src="https://hareram-ai-assistant.hareram.workers.dev/chatbot.js"
+        data-endpoint="https://hareram-ai-assistant.hareram.workers.dev/api/chat" defer></script>
 ```
 
 Only sites listed in `ALLOWED_ORIGINS` (and the Pages address itself) can call
@@ -91,7 +95,8 @@ from another address (a Vercel preview URL, a new domain), add that address to
 website".
 
 After editing `knowledge.json`, `prompt.js`, `chatbot.js` or `chatbot.css`,
-just push: Cloudflare rebuilds. Browsers cache the widget files for 5 minutes.
+the Worker must be redeployed (see above). Browsers cache the widget files for
+5 minutes.
 
 ## Vercel deployment (alternative)
 

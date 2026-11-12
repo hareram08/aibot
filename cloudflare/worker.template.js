@@ -199,32 +199,34 @@ function asset(body, type) {
 
 function testPage(origin) {
   // <base> makes the assistant's site links (/resume/..., #contact) point at the real portfolio.
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Hare Ram's AI Assistant — widget test page</title>
-<base href="https://hareram.website/" target="_blank">
-<link rel="stylesheet" href="${origin}/chatbot.css">
-<style>
-  :root { color-scheme: dark; }
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #101614; color: #e7eeeb; font-family: "Segoe UI", system-ui, sans-serif; }
-  main { max-width: 34rem; padding: 2rem; line-height: 1.6; }
-  h1 { font-size: 1.6rem; margin: 0 0 .5rem; }
-  p { color: #a3b0aa; }
-  a { color: #3cbfb2; }
-</style>
-</head>
-<body>
-<main>
-  <h1>Hare Ram's AI Assistant</h1>
-  <p>This is a test page for the chat widget used on <a href="https://hareram.website/">hareram.website</a>. Click the button in the bottom-right corner to try it.</p>
-</main>
-<script src="${origin}/chatbot.js" data-endpoint="${origin}/api/chat" defer></script>
-</body>
-</html>`;
+  const html = [
+    '<!DOCTYPE html>',
+    '<html lang="en">',
+    '<head>',
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    '<meta name="robots" content="noindex">',
+    "<title>Hare Ram's AI Assistant: widget test page</title>",
+    '<base href="https://hareram.website/" target="_blank">',
+    '<link rel="stylesheet" href="' + origin + '/chatbot.css">',
+    '<style>',
+    ':root{color-scheme:dark}',
+    'body{margin:0;min-height:100vh;display:grid;place-items:center;background:#101614;color:#e7eeeb;font-family:"Segoe UI",system-ui,sans-serif}',
+    'main{max-width:34rem;padding:2rem;line-height:1.6}',
+    'h1{font-size:1.6rem;margin:0 0 .5rem}',
+    'p{color:#a3b0aa}',
+    'a{color:#3cbfb2}',
+    '</style>',
+    '</head>',
+    '<body>',
+    '<main>',
+    "<h1>Hare Ram's AI Assistant</h1>",
+    '<p>This is a test page for the chat widget used on <a href="https://hareram.website/">hareram.website</a>. Click the button in the bottom-right corner to try it.</p>',
+    '</main>',
+    '<script src="' + origin + '/chatbot.js" data-endpoint="' + origin + '/api/chat" defer></script>',
+    '</body>',
+    '</html>',
+  ].join("\n");
   return new Response(html, {
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" },
   });
