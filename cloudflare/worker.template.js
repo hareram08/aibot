@@ -12,7 +12,7 @@
  *
  * Configuration (Worker > Settings > Variables and Secrets)
  *   GEMINI_API_KEY    secret; set this OR OPENAI_API_KEY (Gemini is tried first)
- *   GEMINI_MODEL      optional, default gemini-2.5-flash
+ *   GEMINI_MODEL      optional, default gemini-3.8-flash
  *   OPENAI_API_KEY    secret, alternative provider
  *   OPENAI_MODEL      optional, default gpt-4.1-mini
  *   ALLOWED_ORIGINS   comma-separated sites allowed to embed the widget

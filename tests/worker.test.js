@@ -164,7 +164,7 @@ test("uses Gemini when GEMINI_API_KEY is set (it takes priority over OPENAI_API_
     assert.strictEqual(response.status, 200);
     assert.deepStrictEqual(JSON.parse(text), { reply: "Gemini answer about Hare Ram." });
     assert.ok(!text.includes("AIza-test-key-123"));
-    assert.match(lastUpstream.url, /\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+    assert.match(lastUpstream.url, /\/v1beta\/models\/gemini-3\.8-flash:generateContent$/);
     assert.strictEqual(lastUpstream.headers["x-goog-api-key"], "AIza-test-key-123");
     assert.deepStrictEqual(
       lastUpstream.body.contents.map((c) => c.role),

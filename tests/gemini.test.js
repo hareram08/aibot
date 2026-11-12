@@ -83,7 +83,7 @@ test("picks Gemini when GEMINI_API_KEY is set, and never leaks the key", async (
   const text = await response.text();
   assert.deepStrictEqual(JSON.parse(text), { reply: "Mock answer about Hare Ram." });
   assert.ok(!text.includes("AIza-test-key-123"));
-  assert.strictEqual(lastUpstreamRequest.url, "/v1beta/models/gemini-2.5-flash:generateContent");
+  assert.strictEqual(lastUpstreamRequest.url, "/v1beta/models/gemini-3.8-flash:generateContent");
   assert.strictEqual(lastUpstreamRequest.headers["x-goog-api-key"], "AIza-test-key-123");
 });
 

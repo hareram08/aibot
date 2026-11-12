@@ -76,7 +76,7 @@ Variables (Workers & Pages > hareram-ai-assistant > Settings > Variables and Sec
 |---|---|---|
 | `GEMINI_API_KEY` | Secret | your Gemini key (never commit it) — used if set, even if `OPENAI_API_KEY` is also set |
 | `ALLOWED_ORIGINS` | Text | `https://hareram.website,https://www.hareram.website` |
-| `GEMINI_MODEL` | Text, optional | default `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Text, optional | default `gemini-3.8-flash` |
 | `OPENAI_API_KEY` | Secret, alternative provider | your OpenAI key (only used if `GEMINI_API_KEY` is not set) |
 | `OPENAI_MODEL` | Text, optional | default `gpt-4.1-mini` |
 

@@ -8,7 +8,7 @@
  */
 
 const DEFAULT_OPENAI_MODEL = "gpt-4.1-mini";
-const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
+const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
 
 function pickProvider(env) {
   if (env.GEMINI_API_KEY) return "gemini";
