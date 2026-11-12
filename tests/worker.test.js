@@ -149,7 +149,7 @@ test("uses Gemini when GEMINI_API_KEY is set (it takes priority over OPENAI_API_
     let raw = "";
     req.on("data", (chunk) => (raw += chunk));
     req.on("end", () => {
-      lastUpstream = { url: req.url, body: JSON.parse(raw || "{}") };
+      lastUpstream = { url: req.url, headers: req.headers, body: JSON.parse(raw || "{}") };
       res.end(JSON.stringify({ candidates: [{ content: { parts: [{ text: "Gemini answer about Hare Ram." }] }, finishReason: "STOP" }] }));
     });
   });
@@ -164,7 +164,8 @@ test("uses Gemini when GEMINI_API_KEY is set (it takes priority over OPENAI_API_
     assert.strictEqual(response.status, 200);
     assert.deepStrictEqual(JSON.parse(text), { reply: "Gemini answer about Hare Ram." });
     assert.ok(!text.includes("AIza-test-key-123"));
-    assert.match(lastUpstream.url, /\/v1beta\/models\/gemini-2\.5-flash:generateContent\?key=AIza-test-key-123$/);
+    assert.match(lastUpstream.url, /\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+    assert.strictEqual(lastUpstream.headers["x-goog-api-key"], "AIza-test-key-123");
     assert.deepStrictEqual(
       lastUpstream.body.contents.map((c) => c.role),
       ["user"]

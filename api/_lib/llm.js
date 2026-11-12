@@ -65,9 +65,11 @@ async function askGemini(messages, env, systemPrompt, maxTokens, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(baseUrl + "/models/" + model + ":generateContent?key=" + encodeURIComponent(env.GEMINI_API_KEY), {
+    // The key goes in the x-goog-api-key header rather than ?key=: it works for both
+    // the older AIza... keys and the newer AQ.Ab... auth keys, and keeps the key out of URLs.
+    const response = await fetch(baseUrl + "/models/" + model + ":generateContent", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: toGeminiContents(messages),
