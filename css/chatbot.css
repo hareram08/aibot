@@ -1,0 +1,574 @@
+/*
+ * Hare Ram's AI Assistant — chat widget styles.
+ * Uses the site's own CSS variables (--bg, --accent, --line, ...) from
+ * styles.css, so it follows the light/dark theme toggle automatically.
+ * Every class is prefixed "hrc-" so nothing here touches existing sections.
+ */
+
+.hrc-root {
+  --hrc-gap: 20px;
+  --hrc-launcher: 56px;
+  font-family: var(--sans, "IBM Plex Sans", "Segoe UI", sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink, #e7eeeb);
+}
+
+.hrc-root *,
+.hrc-root *::before,
+.hrc-root *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Launcher ---------- */
+
+.hrc-launcher {
+  position: fixed;
+  right: var(--hrc-gap);
+  bottom: calc(var(--hrc-gap) + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  width: var(--hrc-launcher);
+  height: var(--hrc-launcher);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent, #3cbfb2);
+  color: var(--accent-ink, #06211e);
+  box-shadow: var(--shadow, 0 16px 40px rgba(0, 0, 0, 0.28));
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.hrc-launcher:hover {
+  transform: translateY(-2px);
+}
+
+.hrc-launcher svg {
+  width: 24px;
+  height: 24px;
+  grid-area: 1 / 1;
+  transition: opacity 160ms ease, transform 200ms ease;
+}
+
+.hrc-launcher .hrc-icon-close {
+  opacity: 0;
+  transform: rotate(-45deg) scale(0.7);
+}
+
+.hrc-root.is-open .hrc-launcher .hrc-icon-chat {
+  opacity: 0;
+  transform: rotate(45deg) scale(0.7);
+}
+
+.hrc-root.is-open .hrc-launcher .hrc-icon-close {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stay out of the way of the mobile navigation menu. */
+body.nav-open .hrc-root:not(.is-open) .hrc-launcher {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+ * The only rule that touches an existing element: on screens narrower than
+ * 1280px the launcher would sit on top of the footer links when the page is
+ * scrolled to the very bottom, so the footer gets extra room underneath.
+ */
+@media (max-width: 1279px) {
+  .site-footer {
+    padding-bottom: 96px;
+  }
+}
+
+/* ---------- Panel ---------- */
+
+.hrc-panel {
+  position: fixed;
+  right: var(--hrc-gap);
+  bottom: calc(var(--hrc-gap) + var(--hrc-launcher) + 12px + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  width: min(390px, calc(100vw - 2 * var(--hrc-gap)));
+  height: min(620px, calc(100vh - var(--header, 72px) - var(--hrc-launcher) - 2 * var(--hrc-gap) - 24px));
+  height: min(620px, calc(100dvh - var(--header, 72px) - var(--hrc-launcher) - 2 * var(--hrc-gap) - 24px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-raised, #18211e);
+  border: 1px solid var(--line, #2c3b36);
+  border-radius: var(--radius, 14px);
+  box-shadow: var(--shadow, 0 16px 40px rgba(0, 0, 0, 0.28)), 0 2px 10px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(14px) scale(0.98);
+  transform-origin: bottom right;
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 220ms;
+}
+
+.hrc-root.is-open .hrc-panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s;
+}
+
+/* ---------- Header ---------- */
+
+.hrc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 14px;
+  border-bottom: 1px solid var(--line, #2c3b36);
+  flex: none;
+}
+
+.hrc-avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--accent, #3cbfb2);
+  color: var(--accent-ink, #06211e);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.hrc-heading {
+  min-width: 0;
+  flex: 1;
+}
+
+.hrc-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.hrc-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: var(--muted, #a3b0aa);
+}
+
+.hrc-icon-btn {
+  flex: none;
+  min-width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #a3b0aa);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.hrc-icon-btn:hover {
+  color: var(--ink, #e7eeeb);
+  border-color: var(--line, #2c3b36);
+}
+
+.hrc-icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.hrc-icon-btn.is-confirm {
+  color: var(--accent, #3cbfb2);
+  border-color: var(--accent, #3cbfb2);
+}
+
+/* ---------- Message log ---------- */
+
+.hrc-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line, #2c3b36) transparent;
+}
+
+.hrc-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 88%;
+  animation: hrc-in 220ms ease both;
+}
+
+.hrc-msg--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.hrc-msg--ai,
+.hrc-msg--error {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.hrc-bubble {
+  padding: 9px 12px;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.hrc-msg--user .hrc-bubble {
+  background: var(--accent, #3cbfb2);
+  color: var(--accent-ink, #06211e);
+  border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
+}
+
+.hrc-msg--ai .hrc-bubble {
+  background: var(--bg, #101614);
+  border: 1px solid var(--line, #2c3b36);
+  border-bottom-left-radius: 4px;
+}
+
+.hrc-msg--error .hrc-bubble {
+  background: transparent;
+  border: 1px dashed var(--muted, #a3b0aa);
+  color: var(--muted, #a3b0aa);
+  border-bottom-left-radius: 4px;
+}
+
+.hrc-bubble p {
+  margin: 0;
+}
+
+.hrc-bubble p + p,
+.hrc-bubble p + ul,
+.hrc-bubble p + ol,
+.hrc-bubble ul + p,
+.hrc-bubble ol + p,
+.hrc-bubble ul + ol,
+.hrc-bubble ol + ul {
+  margin-top: 8px;
+}
+
+.hrc-bubble ul,
+.hrc-bubble ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.hrc-bubble li + li {
+  margin-top: 3px;
+}
+
+.hrc-bubble a {
+  color: var(--accent, #3cbfb2);
+  font-weight: 500;
+}
+
+.hrc-bubble code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.86em;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--accent-soft, #14312e);
+}
+
+.hrc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 0 2px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  color: var(--muted, #a3b0aa);
+}
+
+.hrc-link-btn {
+  padding: 2px 6px;
+  margin: -2px 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted, #a3b0aa);
+  font: inherit;
+  cursor: pointer;
+}
+
+.hrc-link-btn:hover {
+  color: var(--accent, #3cbfb2);
+  background: var(--accent-soft, #14312e);
+}
+
+/* Typing indicator */
+
+.hrc-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 1.55em;
+}
+
+.hrc-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted, #a3b0aa);
+  animation: hrc-dot 1.1s ease-in-out infinite;
+}
+
+.hrc-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.hrc-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* ---------- Suggested questions ---------- */
+
+.hrc-suggest {
+  flex: none;
+  max-height: 172px;
+  overflow-y: auto;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line, #2c3b36);
+  scrollbar-width: thin;
+}
+
+.hrc-suggest-label {
+  margin: 0 0 8px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent, #3cbfb2);
+}
+
+.hrc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hrc-chip {
+  padding: 5px 10px;
+  border: 1px solid var(--line, #2c3b36);
+  border-radius: 999px;
+  background: var(--bg, #101614);
+  color: var(--ink, #e7eeeb);
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hrc-chip:hover:not(:disabled) {
+  border-color: var(--accent, #3cbfb2);
+  color: var(--accent, #3cbfb2);
+}
+
+.hrc-chip:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ---------- Composer ---------- */
+
+.hrc-form {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px 6px;
+  border-top: 1px solid var(--line, #2c3b36);
+}
+
+/* The site styles every <textarea> with min-height: 140px; reset that here. */
+.hrc-root textarea.hrc-input {
+  flex: 1;
+  width: auto;
+  min-height: 42px;
+  max-height: 110px;
+  padding: 9px 12px;
+  border: 1px solid var(--line, #2c3b36);
+  border-radius: 10px;
+  background: var(--bg, #101614);
+  color: var(--ink, #e7eeeb);
+  font: inherit;
+  line-height: 1.45;
+  resize: none;
+}
+
+.hrc-root textarea.hrc-input::placeholder {
+  color: var(--muted, #a3b0aa);
+}
+
+.hrc-send {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent, #3cbfb2);
+  color: var(--accent-ink, #06211e);
+  cursor: pointer;
+}
+
+.hrc-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.hrc-send svg {
+  width: 18px;
+  height: 18px;
+}
+
+.hrc-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  font-size: 0.7rem;
+  color: var(--muted, #a3b0aa);
+}
+
+.hrc-foot p {
+  margin: 0;
+}
+
+.hrc-counter {
+  font-family: var(--mono, ui-monospace, monospace);
+  white-space: nowrap;
+}
+
+.hrc-counter.is-over {
+  color: #e5484d;
+}
+
+.hrc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Small screens: full-height sheet ---------- */
+
+@media (max-width: 600px) {
+  .hrc-root {
+    --hrc-gap: 16px;
+    --hrc-launcher: 52px;
+  }
+
+  .hrc-panel {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    transform: translateY(24px);
+    transform-origin: bottom center;
+  }
+
+  /* The panel has its own close button; hide the launcher while open. */
+  .hrc-root.is-open .hrc-launcher {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hrc-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  }
+
+  /* 16px stops iOS Safari zooming the page when the input is focused. */
+  .hrc-root textarea.hrc-input {
+    font-size: 16px;
+  }
+
+  .hrc-msg {
+    max-width: 92%;
+  }
+
+  .hrc-suggest {
+    max-height: 46vh;
+  }
+}
+
+@keyframes hrc-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hrc-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hrc-launcher,
+  .hrc-launcher svg,
+  .hrc-panel,
+  .hrc-root.is-open .hrc-panel {
+    transition: none;
+  }
+
+  .hrc-panel {
+    transform: none;
+  }
+
+  .hrc-msg,
+  .hrc-typing span {
+    animation: none;
+  }
+}
+
+@media print {
+  .hrc-root {
+    display: none;
+  }
+}

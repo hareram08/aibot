@@ -1,0 +1,435 @@
+{
+  "_meta": {
+    "purpose": "Single source of truth for Hare Ram's AI assistant. Edit this file to update what the chatbot knows. Never add anything that is not true.",
+    "sources": [
+      "hareram.website (inspected 2026-11-12)",
+      "Project brief supplied by Hare Ram"
+    ],
+    "last_updated": "2026-11-12"
+  },
+  "profile": {
+    "name": "Hare Ram",
+    "headline": "Data Analyst | Python | SQL | Power BI | AWS",
+    "summary": "MSc graduate in Statistics with a strong quantitative foundation, focused on Data Analytics and Business Intelligence. Works with Python, SQL, Excel, Power BI, and AWS to clean, analyze, visualize, and transform data into actionable insights.",
+    "about": [
+      "MSc Statistics graduate from Patna University with a strong foundation in statistics, quantitative analysis, and data interpretation.",
+      "Building his career in Data Analytics; enjoys working with data to discover patterns, generate insights, and support business decisions.",
+      "Current focus includes Python, SQL, Excel, Pandas, NumPy, Power BI, Tableau, AWS, data pipelines, Databricks, and RAG-based applications.",
+      "Enjoys practical projects involving data cleaning, exploratory data analysis, visualization, dashboards, cloud services, and data pipelines."
+    ],
+    "career_interests": [
+      "Data Analytics",
+      "Business Intelligence",
+      "Data Engineering"
+    ],
+    "open_to": "Opportunities in Data Analytics, Business Intelligence, Data Engineering, and related entry-level roles."
+  },
+  "education": {
+    "degree": "MSc in Statistics",
+    "university": "Patna University",
+    "focus_areas": [
+      "Statistics",
+      "Quantitative Analysis",
+      "Data Interpretation",
+      "Statistical Methods",
+      "Probability",
+      "Data Analysis"
+    ],
+    "not_in_portfolio": [
+      "graduation year",
+      "marks or grades",
+      "undergraduate degree details"
+    ]
+  },
+  "professional_experience": {
+    "listed_in_portfolio": false,
+    "note": "The portfolio does not list any employment history, internships, or job titles held. His evidence of skill is his degree and his hands-on projects. Do not describe him as having professional or industry experience."
+  },
+  "certifications": {
+    "completed_listed_in_portfolio": [],
+    "note": "No completed certifications are listed. The portfolio says completed certificates will be added with issuer and date."
+  },
+  "currently_learning": [
+    "Data Analytics",
+    "Python for Data Analysis",
+    "SQL",
+    "Power BI",
+    "AWS Cloud",
+    "Data Engineering",
+    "RAG / Generative AI"
+  ],
+  "skills": {
+    "programming_languages": [
+      "Python",
+      "SQL",
+      "R"
+    ],
+    "python_libraries": [
+      "Pandas",
+      "NumPy",
+      "Matplotlib",
+      "Seaborn",
+      "Plotly"
+    ],
+    "databases": [
+      "MySQL",
+      "SQL Server"
+    ],
+    "data_analysis": [
+      "Statistics",
+      "Statistical Analysis",
+      "Data Cleaning",
+      "Exploratory Data Analysis"
+    ],
+    "visualization_and_bi": [
+      "Microsoft Excel",
+      "Power BI",
+      "Tableau",
+      "Data Visualization"
+    ],
+    "cloud_aws": [
+      "AWS S3",
+      "AWS Lambda",
+      "Amazon RDS",
+      "Amazon EC2",
+      "Amazon VPC",
+      "IAM",
+      "CloudWatch",
+      "CloudFront",
+      "Route 53",
+      "AWS Certificate Manager"
+    ],
+    "data_engineering": [
+      "ETL pipelines",
+      "ELT",
+      "Data transformation",
+      "Data Pipelines",
+      "Batch Processing",
+      "Real-Time Processing",
+      "Databricks",
+      "Bronze / Silver / Gold architecture"
+    ],
+    "ai_genai": [
+      "RAG",
+      "LLM Applications",
+      "PDF Question Answering",
+      "Embeddings",
+      "Vector Search"
+    ],
+    "tools": [
+      "Git",
+      "GitHub",
+      "VS Code",
+      "Jupyter Notebook"
+    ]
+  },
+  "capabilities": {
+    "Data Analysis": "Clean, transform, analyze, and interpret datasets.",
+    "SQL": "Write queries using joins, aggregations, subqueries, CTEs, and window functions. Platforms: MySQL and SQL Server.",
+    "Python": "Use Pandas, NumPy, Matplotlib, Seaborn, and Python for data analysis.",
+    "Power BI": "Build interactive dashboards, KPIs, reports, and business visualizations.",
+    "Statistics": "Apply descriptive statistics and statistical concepts to analyze data.",
+    "Cloud": "Build practical AWS solutions using S3, Lambda, RDS, EC2, VPC, IAM, and CloudWatch.",
+    "Data Pipelines": "Understand and implement ETL/ELT workflows and Bronze-Silver-Gold architectures."
+  },
+  "analytics_workflow": [
+    "Data Collection",
+    "Data Cleaning",
+    "Exploratory Data Analysis",
+    "Statistical Analysis",
+    "Visualization",
+    "Business Insights",
+    "Dashboard / Report"
+  ],
+  "projects": [
+    {
+      "id": "aws-s3-lambda-rds",
+      "title": "AWS S3 → Lambda → RDS Data Pipeline",
+      "category": "Cloud",
+      "shown_on_website": true,
+      "objective": "A serverless AWS proof-of-concept that automatically records details of every file uploaded to an S3 bucket in a MySQL database.",
+      "business_problem": "When files arrive in cloud storage, teams need an automatic, reliable record of what arrived and when, without someone logging uploads by hand or keeping a server running.",
+      "technologies": [
+        "Amazon S3",
+        "AWS Lambda",
+        "Python",
+        "Amazon RDS",
+        "MySQL",
+        "IAM",
+        "CloudWatch"
+      ],
+      "architecture": "S3 → Lambda → RDS MySQL → CloudWatch",
+      "workflow": [
+        "A file is uploaded to an Amazon S3 bucket.",
+        "The S3 ObjectCreated event triggers an AWS Lambda function.",
+        "The Lambda function, written in Python, extracts the file's metadata: filename, file size, and upload time.",
+        "The metadata is inserted into a MySQL database on Amazon RDS.",
+        "CloudWatch is used to monitor the Lambda execution through logs."
+      ],
+      "technical_implementation": "Event-driven design: an S3 ObjectCreated event notification invokes a Python Lambda function, which reads the event, extracts metadata, and writes a row to RDS MySQL. IAM permissions control what the function may access, and CloudWatch logging is used for monitoring.",
+      "skills_demonstrated": [
+        "Event-driven serverless design",
+        "S3 event triggers",
+        "Python on AWS Lambda",
+        "Writing to a relational database from code",
+        "IAM permissions",
+        "CloudWatch logging and monitoring"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    },
+    {
+      "id": "aws-public-app-private-db",
+      "title": "AWS Public Application + Private Database VPC",
+      "category": "Cloud",
+      "shown_on_website": true,
+      "objective": "A secure AWS network design where users can reach an application from the internet while the application server and database stay private.",
+      "business_problem": "Applications must be reachable by users, but servers and databases exposed directly to the internet are a security risk. This architecture gives public access through one controlled entry point only.",
+      "technologies": [
+        "AWS VPC",
+        "Public Subnet",
+        "Private Subnet",
+        "Application Load Balancer",
+        "Amazon EC2",
+        "RDS MySQL",
+        "Security Groups",
+        "IAM"
+      ],
+      "architecture": "Internet → ALB → Private EC2 → Private RDS MySQL. Security group chain: ALB-SG → App-SG → RDS-SG",
+      "workflow": [
+        "A VPC is set up with public and private subnets.",
+        "An internet-facing Application Load Balancer sits in the public subnets and is the only public entry point.",
+        "The EC2 application server runs in a private subnet and receives traffic only from the load balancer.",
+        "The RDS MySQL database runs in a private subnet with public access disabled.",
+        "Security groups are chained so the ALB can talk to the application, and only the application can talk to the database."
+      ],
+      "technical_implementation": "Network isolation using public and private subnets, with security group chaining (ALB-SG → App-SG → RDS-SG) so each layer accepts traffic only from the layer in front of it. Database public access is disabled.",
+      "skills_demonstrated": [
+        "VPC and subnet design",
+        "Load balancing",
+        "Security group chaining",
+        "Network boundaries",
+        "Keeping databases private"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    },
+    {
+      "id": "fleet-performance-monitoring",
+      "title": "Cloud-Based Fleet Performance Monitoring & Optimization",
+      "category": "Data engineering / Analytics",
+      "shown_on_website": false,
+      "objective": "A cloud-based analytics solution for monitoring fleet utilization and performance.",
+      "business_problem": "Fleet operations data usually sits in several separate operational sources, which makes utilization and performance hard to see in one place.",
+      "technologies": [
+        "Cloud-based analytics",
+        "ETL pipelines",
+        "Data transformation"
+      ],
+      "architecture": "ETL pipelines integrate multiple operational data sources into a cloud-based analytics solution. Further architecture details are not available in the portfolio.",
+      "workflow": [
+        "ETL pipelines integrate multiple operational data sources.",
+        "The data is transformed for analytics.",
+        "The result supports fleet utilization and performance monitoring."
+      ],
+      "technical_implementation": "Only the high-level description above is available. Specific tools, services, and data volumes are not available in the portfolio.",
+      "skills_demonstrated": [
+        "ETL pipeline design",
+        "Integrating multiple data sources",
+        "Data transformation",
+        "Analytics for operational monitoring"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "not_confirmed",
+      "completion_note": "Completion status has not been confirmed by Hare Ram. Describe it only as a project in his portfolio; never say it is completed, delivered, deployed, or in production, and never present it as work experience."
+    },
+    {
+      "id": "databricks-ecommerce-pipeline",
+      "title": "Databricks E-commerce Data Pipeline",
+      "category": "Data engineering",
+      "shown_on_website": true,
+      "objective": "An e-commerce data pipeline following a Bronze, Silver, and Gold architecture for data ingestion, transformation, quality checks, and analytics.",
+      "business_problem": "Raw e-commerce data is not ready for reporting. It has to be ingested, cleaned, and checked for quality in stages before it can feed trustworthy dashboards.",
+      "technologies": [
+        "Databricks",
+        "Python",
+        "SQL",
+        "ETL",
+        "Data Quality",
+        "Data Pipeline",
+        "Power BI"
+      ],
+      "architecture": "Raw → Bronze → Silver → Gold → Power BI",
+      "workflow": [
+        "Raw data is ingested into the Bronze layer.",
+        "Data is cleaned and transformed into the Silver layer, with SQL analysis and data quality checks.",
+        "Analytics-ready tables are built in the Gold layer.",
+        "Power BI is used for reporting on the Gold layer."
+      ],
+      "technical_implementation": "Layered (medallion) pipeline in Databricks using Python and SQL: ingestion and transformation, SQL analysis and data quality checks, then Gold-layer analytics and BI reporting.",
+      "skills_demonstrated": [
+        "Bronze / Silver / Gold architecture",
+        "Data ingestion and transformation",
+        "SQL analysis",
+        "Data quality checks",
+        "BI reporting"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    },
+    {
+      "id": "netflix-analysis",
+      "title": "Netflix Content & Viewership Analysis",
+      "category": "Analytics",
+      "shown_on_website": true,
+      "objective": "An exploratory data analysis project on Netflix content, production trends, genres, viewership, movies vs TV shows, and audience patterns.",
+      "business_problem": "Understanding what kind of content a streaming catalogue contains and how production and viewing patterns vary.",
+      "technologies": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "Plotly",
+        "Data Visualization",
+        "Jupyter Notebook"
+      ],
+      "architecture": "Notebook-based analysis; no separate architecture is described in the portfolio.",
+      "workflow": [
+        "Data cleaning",
+        "Exploratory data analysis",
+        "Content and genre analysis",
+        "Production trends and viewership analysis",
+        "Interactive visualizations"
+      ],
+      "technical_implementation": "Python analysis in Jupyter Notebook using Pandas and NumPy, with interactive charts in Plotly.",
+      "skills_demonstrated": [
+        "Data cleaning",
+        "Exploratory data analysis",
+        "Interactive visualization"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    },
+    {
+      "id": "youtube-channel-analytics",
+      "title": "YouTube Channel Analytics",
+      "category": "Analytics",
+      "shown_on_website": true,
+      "objective": "Collects and analyzes YouTube channel information for Data Science, Data Analytics, and Data Engineering channels across different countries.",
+      "business_problem": "Comparing channels in a niche by audience size and activity, across countries, from data gathered directly from the platform.",
+      "technologies": [
+        "Python",
+        "YouTube API",
+        "Pandas",
+        "Excel",
+        "Power BI"
+      ],
+      "architecture": "YouTube API → Python / Pandas → Excel → Power BI dashboards",
+      "workflow": [
+        "Channel data is collected through the YouTube API: subscribers, total views, and video count.",
+        "Channel category, country, and creation date are recorded, along with the data collection date.",
+        "Dashboards show channel performance and country-wise comparisons."
+      ],
+      "technical_implementation": "Python collects channel data from the YouTube API, Pandas and Excel organize it, and Power BI is used for dashboards.",
+      "skills_demonstrated": [
+        "Collecting data from an API",
+        "Data preparation with Pandas and Excel",
+        "Power BI dashboards"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    },
+    {
+      "id": "flood-data-analysis",
+      "title": "Flood Data Analysis",
+      "category": "Analytics",
+      "shown_on_website": true,
+      "objective": "Compiles and analyzes flood-related information such as affected people, animals, agriculture, and other impact indicators.",
+      "business_problem": "Flood impact data comes from multiple sources in inconsistent formats, so it has to be compiled and standardized before the impact can be analyzed and reported.",
+      "technologies": [
+        "Python",
+        "Pandas",
+        "Excel",
+        "Data Cleaning",
+        "Data Visualization",
+        "Power BI"
+      ],
+      "architecture": "Multiple datasets → compiled Excel files → cleaning with Python / Pandas → visual reports and Power BI dashboards",
+      "workflow": [
+        "Collect multiple datasets and compile Excel files.",
+        "Clean inconsistent data and standardize columns.",
+        "Analyze affected populations and agricultural impact.",
+        "Create visual reports and dashboards."
+      ],
+      "technical_implementation": "Data compiled in Excel, cleaned and standardized with Python and Pandas, then visualized in reports and Power BI dashboards.",
+      "skills_demonstrated": [
+        "Compiling data from multiple sources",
+        "Cleaning inconsistent data",
+        "Impact analysis",
+        "Dashboards"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    },
+    {
+      "id": "rag-pdf-qa",
+      "title": "RAG PDF Question Answering",
+      "category": "AI",
+      "shown_on_website": true,
+      "objective": "An AI-powered Retrieval-Augmented Generation application that lets users ask questions about PDF documents and retrieves relevant information from them.",
+      "business_problem": "Finding a specific answer inside long PDF documents is slow when done by reading or keyword search.",
+      "technologies": [
+        "Python",
+        "RAG",
+        "LLM",
+        "Embeddings",
+        "Vector Search",
+        "PDF Processing"
+      ],
+      "architecture": "PDF → loading and chunking → embeddings → vector search → retrieval → LLM response",
+      "workflow": [
+        "Document loading and chunking",
+        "Embeddings and vector search",
+        "Retrieval and LLM response generation"
+      ],
+      "technical_implementation": "Python application that loads and chunks PDFs, creates embeddings, searches them with vector search, and passes the retrieved text to an LLM to generate the answer. The specific LLM and vector store are not named in the portfolio.",
+      "skills_demonstrated": [
+        "Document chunking",
+        "Embeddings",
+        "Vector search",
+        "Retrieval-augmented generation"
+      ],
+      "outcomes_or_metrics": null,
+      "type": "Portfolio project (not employment)",
+      "completion_status": "shown_on_website_as_project"
+    }
+  ],
+  "faq": {
+    "why_data_analytics": "Hare Ram completed his education in Statistics and decided to pursue Data Analytics because he wants to apply his statistical knowledge, Python, SQL, Excel, and Power BI to solve real-world business problems.",
+    "how_statistics_helps": "His degree covered statistics, quantitative analysis, data interpretation, statistical methods, probability, and data analysis. Those are the foundations of analytics work: summarizing data with descriptive statistics, understanding variation, interpreting results correctly, and applying statistical analysis as a step in his workflow between exploratory analysis and visualization."
+  },
+  "links": {
+    "website": "https://hareram.website/",
+    "resume_download": "/resume/Hare_Ram_Resume.pdf",
+    "github": "https://github.com/hareram08",
+    "linkedin": "https://www.linkedin.com/in/hare-ram-1b5526421/",
+    "email": "hareram2011000@gmail.com",
+    "contact_section": "#contact",
+    "projects_section": "#projects",
+    "note": "Individual project repository links are not listed; all project cards point to the main GitHub profile."
+  },
+  "not_available_in_portfolio": [
+    "Employment history, internships, or years of experience",
+    "Completed certifications",
+    "Project results, performance metrics, data volumes, or business impact numbers",
+    "Graduation year, grades, or undergraduate details",
+    "Location, phone number, age, salary expectations, notice period, or availability dates",
+    "Completion status of the Fleet Performance Monitoring project"
+  ]
+}
